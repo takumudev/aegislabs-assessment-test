@@ -1,0 +1,61 @@
+services:
+    app:
+        image: aegislabs-laravel
+        container_name: aegislabs-app
+        build:
+            context: .
+            dockerfile: Dockerfile
+            target: development
+        depends_on:
+            - redis
+            - postgresql
+        ports:
+            - "8080:80"
+        volumes:
+            - ..:/app
+        environment:
+            CONTAINER_ROLE: app
+            APP_ENV: local
+            CACHE_DRIVER: redis
+            SESSION_DRIVER: redis
+            QUEUE_DRIVER: redis
+            REDIS_HOST: redis
+            PHP_IDE_CONFIG: "serverName=localhost"
+    queue:
+        image: aegislabs-laravel
+        container_name: aegislabs-queue
+        depends_on:
+            - app
+        volumes:
+            - ..:/app
+        environment:
+            CONTAINER_ROLE: queue
+            APP_ENV: local
+            CACHE_DRIVER: redis
+            SESSION_DRIVER: redis
+            QUEUE_DRIVER: redis
+            REDIS_HOST: redis
+            PHP_IDE_CONFIG: "serverName=localhost"
+    redis:
+        container_name: aegislabs-redis
+        image: redis:7.4.1-alpine
+        ports:
+            - "16379:6379"
+        volumes:
+            - redis:/data
+    postgresql:
+        container_name: aegislabs-postgresql
+        image: postgres:17.2-alpine
+        ports:
+            - "15432:5432"
+        volumes:
+            - postgresql:/var/lib/postgresql/data
+        environment:
+            POSTGRES_DB: aegislabs
+            POSTGRES_USER: aegisadmin
+            POSTGRES_PASSWORD: password12345
+volumes:
+    redis:
+        driver: "local"
+    postgresql:
+        driver: "local"

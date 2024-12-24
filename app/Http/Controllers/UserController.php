@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\DTOs\UserCreateRequestDTO;
 use App\DTOs\UserSearchRequestDTO;
+use App\Services\UserService\CreateUserCommand;
+use App\Services\UserService\SearchUserCommand;
 use App\Services\UserService\UserServiceInterface;
 use Illuminate\Http\Request;
 
@@ -21,7 +23,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->userService->searchUser(UserSearchRequestDTO::fromRequest($request));
+        $cmd = new SearchUserCommand(UserSearchRequestDTO::fromRequest($request), 10);
+        return $this->userService->searchUser($cmd);
     }
 
     /**
@@ -29,6 +32,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        return $this->userService->createUser(UserCreateRequestDTO::fromRequest($request));
+        $cmd = new CreateUserCommand(UserCreateRequestDTO::fromRequest($request));
+        return $this->userService->createUser($cmd);
     }
 }

@@ -20,6 +20,8 @@ services:
             SESSION_DRIVER: redis
             QUEUE_DRIVER: redis
             REDIS_HOST: redis
+            MAIL_MAILER: smtp
+            MAIL_HOST: mailpit
             PHP_IDE_CONFIG: "serverName=localhost"
     queue:
         image: aegislabs-laravel
@@ -37,8 +39,8 @@ services:
             REDIS_HOST: redis
             PHP_IDE_CONFIG: "serverName=localhost"
     redis:
-        container_name: aegislabs-redis
         image: redis:7.4.1-alpine
+        container_name: aegislabs-redis
         ports:
             - "16379:6379"
         volumes:
@@ -54,8 +56,25 @@ services:
             POSTGRES_DB: aegislabs
             POSTGRES_USER: aegisadmin
             POSTGRES_PASSWORD: password12345
+    mailpit:
+        image: axllent/mailpit
+        container_name: aegislabs-mailpit
+        profiles:
+            - dev
+        ports:
+            - "18025:8025"
+            - "11025:1025"
+        volumes:
+            - mailpit:/data
+        environment:
+            MP_MAX_MESSAGES: 5000
+            MP_DATABASE: /data/mailpit.db
+            MP_SMTP_AUTH_ACCEPT_ANY: 1
+            MP_SMTP_AUTH_ALLOW_INSECURE: 1
 volumes:
     redis:
         driver: "local"
     postgresql:
+        driver: "local"
+    mailpit:
         driver: "local"

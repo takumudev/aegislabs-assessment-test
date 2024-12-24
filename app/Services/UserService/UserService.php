@@ -5,6 +5,7 @@ namespace App\Services\UserService;
 use App\DTOs\UserCreateResponseDTO;
 use App\DTOs\UserSearchDTO;
 use App\DTOs\UserSearchResponseDTO;
+use App\Events\UserCreated;
 use App\Models\User;
 
 class UserService implements UserServiceInterface
@@ -16,6 +17,8 @@ class UserService implements UserServiceInterface
         $newUser = $cmd->dto->toModel(User::class);
         $newUser->save();
         $newUser->refresh();
+
+        UserCreated::dispatch($newUser);
 
         return UserCreateResponseDTO::fromModel($newUser);
     }

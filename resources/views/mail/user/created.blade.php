@@ -1,11 +1,12 @@
 <x-mail::message>
-# User Created
+# Welcome!
 
-The body of your message.
+Dear {{ $user->name }},
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
+Thank you for creating an account.
+
+We're excited to have you on board! For your reference, your username is **{{ $user->email }}**.
+Please remember it to login when you want to place an order.
 
 Thanks,<br>
 {{ config('app.name') }}

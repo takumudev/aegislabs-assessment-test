@@ -25,7 +25,7 @@ class UserCreatedAdmin extends Mailable
     {
         return new Envelope(
             to: config('mail.admin.address'),
-            subject: 'User Created Admin',
+            subject: 'New User Created: ' . $this->user->name,
         );
     }
 
@@ -33,6 +33,9 @@ class UserCreatedAdmin extends Mailable
     {
         return new Content(
             markdown: 'mail.user.created_admin',
+            with: [
+                'user' => $this->user,
+            ]
         );
     }
 

@@ -1,12 +1,8 @@
 <x-mail::message>
-# User Created (Admin)
+# New User Created
 
-The body of your message.
+The following user has been created:
+* Name: **{{ $user->name }}**
+* Email: **{{ $user->email }}**
 
-<x-mail::button :url="''">
-Button Text
-</x-mail::button>
-
-Thanks,<br>
-{{ config('app.name') }}
 </x-mail::message>

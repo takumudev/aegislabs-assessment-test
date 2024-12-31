@@ -1,66 +1,116 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# Aegislabs Assessment Test
 
-## About Laravel
+## Getting Started
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+This guide will help you set up and run the "Aegislabs Assessment" Laravel project using Docker.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Prerequisites
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. Install [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/).
+2. Ensure `docker --version` and `docker-compose --version` confirm successful installation.
 
-## Learning Laravel
+## Setting Up the Project
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+1. Clone the repository:
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+   ```bash
+   git clone <repository-url>
+   cd <repository-folder>
+   ```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+2. Install project dependencies:
 
-## Laravel Sponsors
+   ```bash
+   composer install
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+3. Copy the example environment file:
 
-### Premium Partners
+   ```bash
+   cp .env.example .env
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
 
-## Contributing
+## Building and Running Docker Containers
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+1. Ensure the project setup is complete (see [Setting Up the Project](#setting-up-the-project)).
 
-## Code of Conduct
+2. Build and start the Docker containers:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+   ```bash
+   docker-compose up --build -d
+   ```
 
-## Security Vulnerabilities
+3. Once the containers are up, run the Laravel application setup commands:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   ```bash
+   docker-compose exec app php /app/artisan key:generate
+   docker-compose exec app php /app/artisan migrate
+   docker-compose exec app php /app/artisan db:seed
+   ```
+   
+4. Re-run the docker containers to ensure the queue is running
 
-## License
+   ```bash
+   docker-compose down
+   docker-compose up
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+5. The application should now be accessible at `http://localhost:8080`.
+
+
+## Docker Services Overview
+
+The Docker setup includes the following services, each responsible for different project components:
+
+1. **app**: Main Laravel application service
+   - Runs the Laravel app on port `8080`.
+   - Requires `redis` and `postgresql` services.
+   - Uses the `.env` configuration to manage environment variables, including Redis, mailer, queue, etc.
+
+2. **queue**: Dedicated worker container for processing queued jobs
+   - Uses the Redis queue driver to handle background tasks such as email tasks.
+   - Shares application code with the `app` service.
+
+3. **redis**: Redis instance for caching and queue storage
+   - Runs on port `16379`.
+   - Used by Laravel for caching, session management, and queue storage.
+
+4. **postgresql**: PostgreSQL database service
+   - Runs the database on port `15432`.
+   - Database details:
+     - Database: `aegislabs`
+     - Username: `aegisadmin`
+     - Password: `password12345`
+
+5. **mailpit** (**dev** profile): Mail-catching service for local development
+   - Provides a web interface on port `18025`.
+   - Receives mail on SMTP port `11025`.
+## Additional Docker Commands
+
+Here are some additional commands for common tasks:
+
+- Start all containers including services for local development:
+
+   ```bash
+   docker-compose --profile dev up
+   ```
+
+- Stop all containers:
+
+   ```bash
+   docker-compose down
+   ```
+
+- Access the container's shell:
+
+   ```bash
+   docker-compose exec app bash
+   ```
+
+- Clear caches (config, routes, views, etc.):
+
+   ```bash
+   docker-compose exec app php artisan optimize:clear
+   ```

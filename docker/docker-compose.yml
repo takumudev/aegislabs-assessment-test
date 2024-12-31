@@ -16,6 +16,11 @@ services:
         environment:
             CONTAINER_ROLE: app
             APP_ENV: local
+            DB_CONNECTION: pgsql
+            DB_HOST: postgresql
+            DB_DATABASE: aegislabs
+            DB_USERNAME: aegisadmin
+            DB_PASSWORD: password12345
             CACHE_DRIVER: redis
             SESSION_DRIVER: redis
             QUEUE_DRIVER: redis
@@ -33,6 +38,11 @@ services:
         environment:
             CONTAINER_ROLE: queue
             APP_ENV: local
+            DB_CONNECTION: pgsql
+            DB_HOST: postgresql
+            DB_DATABASE: aegislabs
+            DB_USERNAME: aegisadmin
+            DB_PASSWORD: password12345
             CACHE_DRIVER: redis
             SESSION_DRIVER: redis
             QUEUE_DRIVER: redis
